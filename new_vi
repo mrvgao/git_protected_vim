@@ -1,0 +1,61 @@
+#!/usr/bin/python
+import subprocess
+import sys
+
+
+def check_git_branch():
+    command = "git symbolic-ref --short HEAD"
+    command_list = command.split(' ')
+    process = subprocess.Popen(command_list, stdout=subprocess.PIPE)
+    out, err = process.communicate()
+    return str(out).strip()
+
+
+def main():
+    MASTER = 'master'
+    branch = check_git_branch()
+    if_read_only = False
+    if branch == MASTER:
+        print("You are in the "),
+        print(hilite('master ', green=False, bold=True)),
+        print("Branch"),
+        print("You just could READ ONLY the file")
+        input = raw_input('input any key to continue')
+        if_read_only = True
+
+    run_vi(if_read_only)
+
+
+def run_vi(read_only):
+    if len(sys.argv) > 1:
+        file_name = sys.argv[1]
+
+        if read_only:
+            cmd = 'view'
+        else:
+            cmd = 'vim'
+
+        subprocess.call([cmd, file_name])
+    else:
+        subprocess.call(['vim'])
+
+
+def hilite(string, green, bold):
+    '''
+    Changes string color in terminal.
+    '''
+    attr = []
+    if green:
+        # green
+        attr.append('32')
+    else:
+        # red
+        attr.append('31')
+
+    if bold:
+        attr.append('1')
+
+    return '\x1b[%sm%s\x1b[0m' % (';'.join(attr), string)
+
+if __name__ == '__main__':
+    main()
