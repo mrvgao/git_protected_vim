@@ -25,12 +25,13 @@ def run_vi(read_only):
 
         if read_only:
             cmd = 'view'
+            subprocess.call([cmd, file_name])
         else:
-            cmd = 'vim'
-
-        subprocess.call([cmd, file_name])
+            cmd = 'mvim'
+            arg = '-v'
+            subprocess.call([cmd, arg, file_name])
     else:
-        subprocess.call(['vim'])
+        subprocess.call(['mvim', '-v'])
 
 
 def hilite(string, green, bold):
@@ -55,15 +56,17 @@ def main():
     MASTER = 'master'
     branch = get_git_branch()
     if_read_only = False
+    read = None
     if branch == MASTER:
         print("You are in the "),
         print(hilite('master ', green=False, bold=True)),
         print("Branch"),
         print("You just could READ ONLY the file")
-        raw_input('input any key to continue')
+        read = raw_input('input any key to continue, input q to quit')
         if_read_only = True
 
-    run_vi(if_read_only)
+    if read != 'q':
+        run_vi(if_read_only)
 
 
 if __name__ == '__main__':
